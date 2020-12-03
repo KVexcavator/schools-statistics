@@ -1,18 +1,35 @@
-
+require 'json'
 
 def create_stat_file
   # create statistics file
   sd = File.open("/tmp/statdata", "w")
-  # add data from each json files
-  Dir.glob(File.join(File.dirname(__FILE__), "../data/*.json")) do |file|
-    file_data = File.open(file, "r")
-    file_data.display(sd)
+  # add data from school1.json 
+  path = File.join(File.dirname(__FILE__), "../data/school1.json")
+  file = File.read(path)
+  JSON.parse(file).each do |p|
+    "#{p["math"]}  #{p["rus"]}  #{p["phys"]}\n".display(sd)
   end 
-  # add data from each xml files
-  Dir.glob(File.join(File.dirname(__FILE__), "../data/*.xml")) do |file|
-    file_data = File.open(file, "r")
-    file_data.display(sd)
+  "------\n".display(sd)
+  # add data from school2.json 
+  path = File.join(File.dirname(__FILE__), "../data/school2.json")
+  file = File.read(path)
+  ars, c = [], 0
+  JSON.parse(file).each do |p|
+    ar = []
+    p[1].each do |i|
+      ar << i["grade"]
+    end 
+    ars << ar 
+  end 
+  while c < ars[0].length
+    "#{ars[0][c]}  #{ars[1][c]}  #{ars[2][c]}\n".display(sd)
+    c += 1
   end
+  "------\n".display(sd)
+  # add data from each xml files
+  path = File.join(File.dirname(__FILE__), "../data/school3.xml")
+  file_data = File.read(path)
+  file_data.display(sd)
   # "Barbambia".display(sd)
   sd.close
   puts(File.read("/tmp/statdata"))
