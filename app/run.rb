@@ -1,4 +1,6 @@
 require 'json'
+require 'rexml/document'
+include REXML
 
 def create_stat_file
   # create statistics file
@@ -29,7 +31,10 @@ def create_stat_file
   # add data from each xml files
   path = File.join(File.dirname(__FILE__), "../data/school3.xml")
   file_data = File.read(path)
-  file_data.display(sd)
+  xml = Document.new(file_data)
+  xml.elements.each("root/row/name") do |e|
+    e.text.display(sd)
+  end 
   # "Barbambia".display(sd)
   sd.close
   puts(File.read("/tmp/statdata"))
