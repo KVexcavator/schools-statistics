@@ -4,7 +4,8 @@ include REXML
 
 def create_stat_file
   # create statistics file
-  sd = File.open("/tmp/statdata", "w")
+  storage = "/tmp/statdata"
+  sd = File.open(storage, "w")
 
   # add data from school1.json 
   path = File.join(File.dirname(__FILE__), "../data/school1.json")
@@ -29,7 +30,7 @@ def create_stat_file
     c += 1
   end
   
-  # add data from each xml files
+  # add data from school3.xml 
   path = File.join(File.dirname(__FILE__), "../data/school3.xml")
   file_data = File.read(path)
   xml = Document.new(file_data)
@@ -41,32 +42,41 @@ def create_stat_file
   end
 
   sd.close
+  storage
   # out comment to test
-  puts(File.read("/tmp/statdata"))
+  # puts(File.read(storage))
 end
 
   
 class Statistics
 
-  def initialize(file)
-
+  def initialize storage 
+    @stat_data = File.readlines(storage)
   end
 
-  def average_math
+  def print_result 
+    # puts @stat_data
+    puts "==============="
+    puts "Average Scores:"
+    puts "math: #{average(0)}, russian: #{average(3)}, phys: #{average(-2)}"
+    puts "Bad-learning students percentage: #{bad_learning_students_percentage}%"
+  end 
 
+  # poss = position in line
+  def average poss
+    '%.2f' % ( @stat_data.map{|n| n[poss].to_f}.reduce(:+) / @stat_data.length )
   end
 
-  def average_russan
-
-  end
-
-  def average_phys
-
-  end
-
-  def bad_learning_students_percentage
-
+  def bad_learning_students_percentage 
+    count_bad_student = 0
+    @stat_data.each do |l|
+      if l.match(/[123]/)
+        count_bad_student += 1
+      end
+    end
+    '%.2f' % (count_bad_student.to_f * 100 / @stat_data.length.to_f)
   end
 end
 
-create_stat_file
+repoirt = Statistics.new (create_stat_file)
+repoirt.print_result
